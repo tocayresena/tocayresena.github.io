@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toca &amp; Reseña — Tarjetas NFC de reseñas de Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17211E;
+    --paper:#ECE7DB;
+    --paper-2:#E2DCCB;
+    --teal:#14302D;
+    --teal-2:#0E2220;
+    --brass:#B8863A;
+    --brass-light:#D9AE6A;
+    --white:#FFFFFF;
+    --line: rgba(23,33,30,0.16);
+    --shadow: 0 1px 2px rgba(20,20,15,0.08);
+    --radius: 4px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#161D1B;
+      --paper-2:#1D2523;
+      --ink:#EDE8DC;
+      --line: rgba(237,232,220,0.16);
+      --white:#20302C;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#161D1B;
+    --paper-2:#1D2523;
+    --ink:#EDE8DC;
+    --line: rgba(237,232,220,0.16);
+    --white:#20302C;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    line-height:1.08;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;}
+  a{color:inherit;}
+  img,svg{max-width:100%;display:block;}
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+  .overflow-x{overflow-x:auto;}
+
+  /* ---- nav ---- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 0;
+  }
+  .logo{
+    display:flex; align-items:center; gap:9px;
+    font-family:'Fraunces', serif;
+    font-size:1.22rem;
+    font-weight:500;
+  }
+  .logo svg{width:26px; height:26px;}
+  .nav-links{
+    display:flex; align-items:center; gap:34px;
+    font-size:0.94rem;
+  }
+  .nav-links a{text-decoration:none; opacity:0.82;}
+  .nav-links a:hover{opacity:1;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:12px 22px;
+    border-radius:var(--radius);
+    font-size:0.94rem;
+    font-weight:600;
+    text-decoration:none;
+    border:1px solid transparent;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-primary{background:var(--teal); color:var(--paper);}
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-ghost{border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  .btn-sm{padding:9px 16px; font-size:0.86rem;}
+
+  /* ---- hero ---- */
+  .hero{
+    padding:76px 0 64px;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1.05fr 0.95fr;
+    gap:56px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(2.3rem, 4.3vw, 3.5rem);
+  }
+  .hero-sub{
+    margin-top:22px;
+    font-size:1.12rem;
+    max-width:46ch;
+    opacity:0.86;
+  }
+  .hero-cta{
+    margin-top:34px;
+    display:flex; gap:14px; flex-wrap:wrap;
+  }
+  .hero-meta{
+    margin-top:30px;
+    display:flex; gap:26px; flex-wrap:wrap;
+    font-size:0.86rem;
+    opacity:0.7;
+  }
+  .hero-meta span{display:flex; align-items:center; gap:7px;}
+  .dot{width:5px; height:5px; border-radius:50%; background:var(--brass); flex:none;}
+
+  .hero-art{
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---- stat bar ---- */
+  .statbar{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--paper-2);
+  }
+  .stat-row{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+  }
+  .stat-cell{
+    padding:30px 28px;
+    text-align:left;
+    border-left:1px solid var(--line);
+  }
+  .stat-cell:first-child{border-left:none;}
+  .stat-num{
+    font-family:'Fraunces', serif;
+    font-size:2.1rem;
+    color:var(--brass);
+  }
+  .stat-label{
+    margin-top:6px;
+    font-size:0.9rem;
+    opacity:0.75;
+    max-width:28ch;
+  }
+
+  /* ---- section shell ---- */
+  section{padding:96px 0;}
+  .section-head{
+    max-width:56ch;
+    margin-bottom:52px;
+  }
+  .eyebrow{
+    font-size:0.86rem;
+    color:var(--brass);
+    font-weight:600;
+    margin-bottom:12px;
+  }
+  .section-head h2{
+    font-size:clamp(1.7rem, 3vw, 2.35rem);
+  }
+  .section-head p{
+    margin-top:16px;
+    opacity:0.78;
+    font-size:1.02rem;
+  }
+
+  /* ---- how it works ---- */
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:0;
+    border-top:1px solid var(--line);
+  }
+  .step{
+    padding:34px 30px 0 0;
+    border-right:1px solid var(--line);
+  }
+  .step:last-child{border-right:none;}
+  .step-num{
+    font-family:'Fraunces', serif;
+    font-size:1rem;
+    color:var(--brass);
+    margin-bottom:18px;
+  }
+  .step h3{font-size:1.22rem; font-weight:500;}
+  .step p{margin-top:10px; opacity:0.78; font-size:0.96rem;}
+
+  /* ---- who it's for ---- */
+  .who{background:var(--teal); color:var(--paper);}
+  .who .eyebrow{color:var(--brass-light);}
+  .who .section-head p{color:var(--paper); opacity:0.72;}
+  .biz-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:rgba(236,231,220,0.16);
+    border:1px solid rgba(236,231,220,0.16);
+  }
+  .biz-cell{
+    background:var(--teal);
+    padding:26px 24px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .biz-cell svg{width:22px; height:22px; flex:none; opacity:0.9;}
+  .biz-cell span{font-size:0.98rem;}
+
+  /* ---- pricing ---- */
+  .pricing-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:22px;
+  }
+  .price-card{
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:32px 28px;
+    background:var(--paper-2);
+    display:flex; flex-direction:column;
+    box-shadow:var(--shadow);
+  }
+  .price-card.is-featured{
+    background:var(--teal);
+    color:var(--paper);
+    border-color:var(--teal);
+  }
+  .price-card .plan-name{font-size:0.9rem; opacity:0.7; font-weight:600;}
+  .price-card.is-featured .plan-name{color:var(--brass-light); opacity:1;}
+  .price-card .plan-price{
+    font-family:'Fraunces', serif;
+    font-size:2.5rem;
+    margin-top:12px;
+  }
+  .price-card .plan-price sup{font-size:1rem; opacity:0.6; top:-1em;}
+  .price-card .plan-desc{margin-top:10px; font-size:0.92rem; opacity:0.72;}
+  .plan-list{
+    list-style:none; padding:0; margin:26px 0 30px;
+    display:flex; flex-direction:column; gap:11px;
+    font-size:0.92rem;
+  }
+  .plan-list li{display:flex; gap:10px; align-items:flex-start;}
+  .plan-list li svg{width:16px; height:16px; margin-top:3px; flex:none; color:var(--brass);}
+  .price-card .btn{margin-top:auto; width:100%;}
+
+  /* ---- testimonials ---- */
+  .testi-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+  }
+  .testi{
+    border-top:2px solid var(--brass);
+    padding-top:20px;
+  }
+  .testi p{font-size:1.02rem; font-family:'Fraunces', serif; font-weight:400; font-style:italic; line-height:1.5;}
+  .testi-who{margin-top:18px; font-size:0.86rem; opacity:0.68;}
+
+  /* ---- faq ---- */
+  .faq{max-width:760px;}
+  details{
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+  }
+  summary{
+    cursor:pointer;
+    font-size:1.05rem;
+    font-weight:500;
+    list-style:none;
+    display:flex; justify-content:space-between; align-items:center;
+    gap:16px;
+  }
+  summary::-webkit-details-marker{display:none;}
+  summary .plus{font-size:1.3rem; color:var(--brass); flex:none; transition:transform .18s ease;}
+  details[open] summary .plus{transform:rotate(45deg);}
+  details p{margin-top:14px; opacity:0.76; max-width:60ch;}
+
+  /* ---- final cta ---- */
+  .cta-final{
+    background:var(--teal); color:var(--paper);
+    text-align:left;
+  }
+  .cta-final .wrap{
+    display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap;
+  }
+  .cta-final h2{font-size:clamp(1.7rem,3vw,2.35rem); max-width:20ch;}
+  .cta-final p{margin-top:12px; opacity:0.72; max-width:44ch;}
+
+  footer{padding:52px 0 40px;}
+  .foot-grid{
+    display:flex; justify-content:space-between; gap:30px; flex-wrap:wrap;
+    padding-bottom:30px; border-bottom:1px solid var(--line);
+  }
+  .foot-brand .logo{margin-bottom:12px;}
+  .foot-brand p{opacity:0.65; font-size:0.9rem; max-width:36ch;}
+  .foot-cols{display:flex; gap:64px; flex-wrap:wrap;}
+  .foot-col h4{font-size:0.86rem; font-weight:600; margin-bottom:14px; opacity:0.85;}
+  .foot-col a{display:block; font-size:0.9rem; opacity:0.68; text-decoration:none; margin-bottom:10px;}
+  .foot-col a:hover{opacity:1;}
+  .foot-bottom{
+    padding-top:22px;
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    font-size:0.82rem; opacity:0.55;
+  }
+
+  @media (max-width: 860px){
+    .hero-grid{grid-template-columns:1fr; gap:44px;}
+    .stat-row{grid-template-columns:1fr;}
+    .stat-cell{border-left:none; border-top:1px solid var(--line);}
+    .stat-cell:first-child{border-top:none;}
+    .steps{grid-template-columns:1fr;}
+    .step{border-right:none; border-top:1px solid var(--line); padding:28px 0 0;}
+    .step:first-child{border-top:none;}
+    .biz-grid{grid-template-columns:1fr 1fr;}
+    .pricing-grid{grid-template-columns:1fr;}
+    .testi-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .cta-final .wrap{flex-direction:column; align-items:flex-start;}
+    section{padding:64px 0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10.5" stroke="var(--brass)" stroke-width="1.4"/>
+        <path d="M8 12.6l2.6 2.6L16.2 9.4" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Toca &amp; Reseña
+    </div>
+    <nav class="nav-links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#negocios">Para tu negocio</a>
+      <a href="#precios">Precios</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <a href="#precios" class="btn btn-primary btn-sm">Pedir tarjeta</a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Un toque del celular. Una reseña de 5 estrellas en Google.</h1>
+        <p class="hero-sub">Tarjetas con tecnología NFC que llevan a tus clientes directo al formulario de reseña de Google — sin apps, sin buscar tu negocio, sin excusas.</p>
+        <div class="hero-cta">
+          <a href="#precios" class="btn btn-primary">Ver precios</a>
+          <a href="#como-funciona" class="btn btn-ghost">Cómo funciona →</a>
+        </div>
+        <div class="hero-meta">
+          <span><i class="dot"></i>Sin apps que instalar</span>
+          <span><i class="dot"></i>Configuración en 2 minutos</span>
+          <span><i class="dot"></i>Envío a todo el país</span>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <svg viewBox="0 0 420 380" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <!-- card -->
+          <g>
+            <rect x="30" y="150" width="220" height="140" rx="14" fill="var(--teal)"/>
+            <rect x="30" y="150" width="220" height="140" rx="14" stroke="var(--brass)" stroke-width="1.2" fill="none"/>
+            <circle cx="66" cy="186" r="14" fill="none" stroke="var(--paper)" stroke-width="1.3" opacity="0.85"/>
+            <path d="M60 186a6 6 0 0112 0" stroke="var(--paper)" stroke-width="1.3" fill="none" opacity="0.85"/>
+            <text x="52" y="248" font-family="Fraunces, serif" font-size="17" fill="var(--paper)">Toca &amp; Reseña</text>
+            <text x="52" y="268" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="var(--brass-light)">DEJA TU RESEÑA AQUÍ</text>
+          </g>
+          <!-- waves -->
+          <g stroke="var(--brass)" stroke-width="1.6" fill="none" opacity="0.75">
+            <path d="M255 175 q14 15 0 30"/>
+            <path d="M268 165 q26 25 0 50"/>
+            <path d="M281 155 q38 35 0 70"/>
+          </g>
+          <!-- phone -->
+          <g>
+            <rect x="300" y="70" width="96" height="190" rx="18" fill="var(--paper-2)" stroke="var(--line)" stroke-width="1.4"/>
+            <rect x="312" y="90" width="72" height="130" rx="4" fill="var(--paper)"/>
+            <!-- stars on phone -->
+            <g fill="var(--brass)">
+              <path d="M348 116l3.2 6.6 7.3.9-5.3 5.1 1.3 7.3-6.5-3.5-6.5 3.5 1.3-7.3-5.3-5.1 7.3-.9z"/>
+            </g>
+            <g fill="var(--brass-light)" opacity="0.9">
+              <path d="M330 150l2.2 4.5 4.9.6-3.6 3.5.9 5-4.4-2.4-4.4 2.4.9-5-3.6-3.5 4.9-.6z"/>
+              <path d="M366 150l2.2 4.5 4.9.6-3.6 3.5.9 5-4.4-2.4-4.4 2.4.9-5-3.6-3.5 4.9-.6z"/>
+            </g>
+            <rect x="326" y="180" width="44" height="7" rx="3.5" fill="var(--line)"/>
+            <rect x="326" y="193" width="30" height="7" rx="3.5" fill="var(--line)"/>
+            <circle cx="348" cy="242" r="8" fill="none" stroke="var(--line)" stroke-width="1.4"/>
+          </g>
+          <!-- floating stars trail -->
+          <g fill="var(--brass)" opacity="0.55">
+            <circle cx="130" cy="95" r="2.4"/>
+            <circle cx="160" cy="72" r="1.8"/>
+            <circle cx="192" cy="100" r="2.1"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAT BAR -->
+  <div class="statbar">
+    <div class="wrap">
+      <div class="stat-row">
+        <div class="stat-cell">
+          <div class="stat-num">&lt;10s</div>
+          <div class="stat-label">Lo que tarda un cliente en dejar su reseña, de principio a fin</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Apps, cuentas o registros que tu cliente necesita instalar</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">La tarjeta trabaja en el mostrador aunque tú no estés</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMO FUNCIONA -->
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Cómo funciona</div>
+        <h2>De la mesa a Google, en tres pasos</h2>
+        <p>Cada tarjeta viene programada con el enlace directo a tu ficha de Google Business. No hay nada que tu cliente tenga que escribir o buscar.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Coloca la tarjeta</h3>
+          <p>En el mostrador, la mesa o junto a la caja. Es del tamaño de una tarjeta de crédito.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>El cliente acerca su celular</h3>
+          <p>Con NFC activado (viene así por defecto en casi todos los teléfonos), basta con acercarlo un segundo.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>Se abre Google directo</h3>
+          <p>El formulario de reseña se abre solo, listo para que escriban sus 5 estrellas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARA QUE NEGOCIOS -->
+  <section id="negocios" class="who">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Para tu negocio</div>
+        <h2>Funciona en cualquier mostrador</h2>
+        <p>Si atiendes clientes en persona, una tarjeta NFC te sirve.</p>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M4 10h16M6 10v9m12-9v9M9 10V4h6v6"/></svg><span>Restaurantes y cafés</span></div>
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M12 3l2 5 5 .6-3.7 3.5.9 5.4-4.2-2.6-4.2 2.6.9-5.4L5 8.6 10 8z"/></svg><span>Salones y barberías</span></div>
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg><span>Hoteles y hospedaje</span></div>
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M3 7h18M5 7l1 12a1 1 0 001 1h10a1 1 0 001-1l1-12M9 7V4h6v3"/></svg><span>Tiendas y retail</span></div>
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M12 21s-7-4.5-7-10a7 7 0 0114 0c0 5.5-7 10-7 10z"/><circle cx="12" cy="11" r="2.4"/></svg><span>Clínicas y consultorios</span></div>
+        <div class="biz-cell"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" stroke-width="1.4"><path d="M3 13l1.5-5A2 2 0 016.4 6.5h11.2A2 2 0 0119.5 8L21 13M5 13h14v5a1 1 0 01-1 1h-1a1 1 0 01-1-1v-1H8v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-5z"/></svg><span>Talleres y automotriz</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRECIOS -->
+  <section id="precios">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Precios</div>
+        <h2>Elige cómo empezar</h2>
+        <p>Todas las tarjetas incluyen programación con el enlace a tu ficha de Google y configuración guiada.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="plan-name">TARJETA INDIVIDUAL</div>
+          <div class="plan-price"><sup>$</sup>—</div>
+          <div class="plan-desc">Ideal para un mostrador o una caja registradora.</div>
+          <ul class="plan-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>1 tarjeta NFC programada</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Enlace directo a tu reseña de Google</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Guía de configuración</li>
+          </ul>
+          <a href="#" class="btn btn-ghost">Pedir esta opción</a>
+        </div>
+        <div class="price-card is-featured">
+          <div class="plan-name">PACK NEGOCIO</div>
+          <div class="plan-price"><sup>$</sup>—</div>
+          <div class="plan-desc">3 tarjetas + soporte de mesa, para negocios con varios puntos de atención.</div>
+          <ul class="plan-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>3 tarjetas NFC programadas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Soporte de mesa incluido</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Diseño personalizado con tu logo</li>
+          </ul>
+          <a href="#" class="btn btn-primary">Pedir esta opción</a>
+        </div>
+        <div class="price-card">
+          <div class="plan-name">MULTI-SUCURSAL</div>
+          <div class="plan-price">A medida</div>
+          <div class="plan-desc">Para cadenas con varias sucursales o ubicaciones de Google distintas.</div>
+          <ul class="plan-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Tarjetas por sucursal</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Panel de seguimiento</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Atención dedicada</li>
+          </ul>
+          <a href="#" class="btn btn-ghost">Hablemos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIOS -->
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Resultados</div>
+        <h2>Lo que dicen los negocios que ya la usan</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi">
+          <p>"Antes tenía que pedir la reseña y explicar cómo dejarla. Ahora solo acercan el celular."</p>
+          <div class="testi-who">Dueña de cafetería</div>
+        </div>
+        <div class="testi">
+          <p>"La pusimos junto a la caja y en el primer mes ya se notó el cambio en las reseñas."</p>
+          <div class="testi-who">Gerente de salón de belleza</div>
+        </div>
+        <div class="testi">
+          <p>"Lo mejor es que no depende de que el mesero se acuerde de pedirlo."</p>
+          <div class="testi-who">Encargado de restaurante</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="preguntas">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Preguntas frecuentes</div>
+        <h2>Antes de pedir tu tarjeta</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>¿Qué celulares son compatibles?<span class="plus">+</span></summary>
+          <p>Casi todos los smartphones modernos (Android e iPhone) traen NFC activado por defecto, así que el cliente no necesita hacer nada especial.</p>
+        </details>
+        <details>
+          <summary>¿Puedo cambiar el enlace de la tarjeta después?<span class="plus">+</span></summary>
+          <p>Sí, si cambias de local o de ficha de Google podemos reprogramar la tarjeta sin que tengas que comprar una nueva.</p>
+        </details>
+        <details>
+          <summary>¿Necesito instalar algo en mi negocio?<span class="plus">+</span></summary>
+          <p>No. La tarjeta no necesita electricidad, wifi ni ninguna app de tu parte. Solo se coloca a la vista de tus clientes.</p>
+        </details>
+        <details>
+          <summary>¿Cuánto tardan en llegar las tarjetas?<span class="plus">+</span></summary>
+          <p>Depende de tu ubicación; te confirmamos el tiempo de envío al momento de hacer el pedido.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <div class="wrap">
+      <div>
+        <h2>Tu próxima reseña de 5 estrellas está a un toque de distancia.</h2>
+        <p>Pide tu tarjeta hoy y empieza a recibir más reseñas sin pedirlas en voz alta.</p>
+      </div>
+      <a href="#precios" class="btn btn-primary">Pedir mi tarjeta</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10.5" stroke="var(--brass)" stroke-width="1.4"/>
+            <path d="M8 12.6l2.6 2.6L16.2 9.4" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Toca &amp; Reseña
+        </div>
+        <p>Tarjetas NFC que llevan a tus clientes directo al formulario de reseñas de Google.</p>
+      </div>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <h4>Producto</h4>
+          <a href="#como-funciona">Cómo funciona</a>
+          <a href="#negocios">Para tu negocio</a>
+          <a href="#precios">Precios</a>
+        </div>
+        <div class="foot-col">
+          <h4>Contacto</h4>
+          <a href="mailto:hola@tocayresena.com">hola@tocayresena.com</a>
+          <a href="#preguntas">Preguntas frecuentes</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Toca &amp; Reseña.</span>
+      <span>Página de ejemplo — edita textos, precios y contacto.</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
