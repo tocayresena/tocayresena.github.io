@@ -517,7 +517,7 @@
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Enlace directo a tu reseña de Google</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Guía de configuración</li>
           </ul>
-          <a href="#" class="btn btn-ghost">Pedir esta opción</a>
+          <a href="#contacto" class="btn btn-ghost" onclick="document.getElementById('plan-select').value='Tarjeta individual'">Pedir esta opción</a>
         </div>
         <div class="price-card is-featured">
           <div class="plan-name">PACK NEGOCIO</div>
@@ -528,7 +528,7 @@
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Soporte de mesa incluido</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Diseño personalizado con tu logo</li>
           </ul>
-          <a href="#" class="btn btn-primary">Pedir esta opción</a>
+          <a href="#contacto" class="btn btn-primary" onclick="document.getElementById('plan-select').value='Pack negocio'">Pedir esta opción</a>
         </div>
         <div class="price-card">
           <div class="plan-name">MULTI-SUCURSAL</div>
@@ -539,7 +539,7 @@
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Panel de seguimiento</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Atención dedicada</li>
           </ul>
-          <a href="#" class="btn btn-ghost">Hablemos</a>
+          <a href="#contacto" class="btn btn-ghost" onclick="document.getElementById('plan-select').value='Multi-sucursal'">Hablemos</a>
         </div>
       </div>
     </div>
@@ -594,6 +594,40 @@
           <p>Depende de tu ubicación; te confirmamos el tiempo de envío al momento de hacer el pedido.</p>
         </details>
       </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO / LEAD -->
+  <section id="contacto">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">Contacto</div>
+        <h2>Pide tu tarjeta</h2>
+        <p>Completa tus datos y te contactamos para coordinar el pedido y el pago.</p>
+      </div>
+      <form action="https://formspree.io/f/mjykgvaw" method="POST" style="max-width:520px; display:flex; flex-direction:column; gap:16px;">
+        <div>
+          <label style="display:block; font-size:0.88rem; font-weight:600; margin-bottom:6px;">Nombre</label>
+          <input type="text" name="nombre" required style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2); color:var(--ink); font-family:inherit; font-size:0.96rem;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.88rem; font-weight:600; margin-bottom:6px;">Correo electrónico</label>
+          <input type="email" name="email" required style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2); color:var(--ink); font-family:inherit; font-size:0.96rem;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.88rem; font-weight:600; margin-bottom:6px;">Teléfono</label>
+          <input type="tel" name="telefono" required style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2); color:var(--ink); font-family:inherit; font-size:0.96rem;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.88rem; font-weight:600; margin-bottom:6px;">Plan de interés</label>
+          <select id="plan-select" name="plan" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2); color:var(--ink); font-family:inherit; font-size:0.96rem;">
+            <option value="Tarjeta individual">Tarjeta individual</option>
+            <option value="Pack negocio">Pack negocio</option>
+            <option value="Multi-sucursal">Multi-sucursal</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Enviar solicitud</button>
+      </form>
     </div>
   </section>
 
